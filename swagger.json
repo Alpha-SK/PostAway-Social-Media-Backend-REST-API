@@ -1,0 +1,797 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "description": "API for Postaway application",
+    "title": "Postaway II"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "paths": {
+    "/api/signup": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Register New User",
+        "description": "To register user to create credentials for login. \n\nRequirements: \n 1. Add valid name \n 2. Email with proper structure \n3. Password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "406": {
+            "description": "Not Acceptable... Provide proper credentials"
+          }
+        }
+      }
+    },
+    "/api/signin": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Login",
+        "description": "User login to get token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized... Incorrect Credetials...!"
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Logout",
+        "description": "User logout",
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized... Incorrect Credetials...!"
+          }
+        }
+      }
+    },
+    "/api/get-details/{userId}": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get Details By UserId",
+        "description": "Get user details by providing userId in parameters",
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "ObjectId"
+            },
+            "required": true,
+            "description": "Object ID for the post to you want to look."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized... Incorrect Credetials...!"
+          }
+        }
+      }
+    },
+    "/api/get-all-details": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all details",
+        "description": "Get all details of the user.",
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized... Incorrect Credetials...!"
+          }
+        }
+      }
+    },
+    "/api/update-details/{userId}": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update Details",
+        "description": "Update details of any specific user.",
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "ObjectId"
+            },
+            "required": true,
+            "description": "Object ID for the post to you want to look."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized... Incorrect Credetials...!"
+          }
+        }
+      }
+    },
+    "/api/posts/": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Add new post with Image",
+        "description": "User can upload new post with image. You can skip caption but can't skip Image(No use posting without Image... Duh!!!)",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "caption": {
+                    "type": "string",
+                    "required": false
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "format": "binary",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "500": {
+            "description": "Happens when image is not provied... You can't post without an Image. Try again with Image...!"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Filter posts by userId",
+        "description": "User will get all the posts by specific user using userId as query parameter.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "userId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric userId to get posts posted by a specific user"
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post found by specified user...!"
+          }
+        }
+      }
+    },
+    "/api/posts/all": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get All Posts",
+        "description": "User will get all posts posted on the server.",
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized... Please login to continue...!"
+          }
+        }
+      }
+    },
+    "/api/posts/{id}": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get post by Post ID",
+        "description": "Get a specific post by providing ID as parameters. You can provide only one ID at a time.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID for the post to you want to look."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post with provided Post ID"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Delete post by ID",
+        "description": "Delete a specific existing post by providing ID as parameters. Only user who posted the post can delete the post, others can only view it.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID for the post to be deleted"
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not found... No post available with specified postId in the parameter...!"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Update existing post by ID",
+        "description": "Update a specific existing post by providing ID as parameters. You can change either image or caption or both. Works as long as post with specified ID is available. Only user who posted the post can update the post, others can only view it.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "caption": {
+                    "type": "string",
+                    "required": false
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "format": "binary",
+                    "required": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/comments/{postId}": {
+      "get": {
+        "tags": [
+          "Comments"
+        ],
+        "summary": "Get all comments",
+        "description": "Get all comments on a post by passing a postId as a parameter. ",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the post you want to get comments of."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Comments"
+        ],
+        "summary": "Add new comment to the post.",
+        "description": "Adding new comment to a specific post using postId as a parameter.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the post you want to add comment to."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Comments"
+        ],
+        "summary": "Delete comment of post.",
+        "description": "Deleting comment of specific post using comment id as a parameter. Comment can only be deleted by the user who posted the comment.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the comment you want to add delete."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No comment available with specified ID in the parameter...!"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Comments"
+        ],
+        "summary": "Update existing comment.",
+        "description": "Updating comment of specific post using comment id as a parameter. Can update comment only if it exists (duh!!!)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the comment you want to update."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No comment available with specified ID in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/likes/{postId}": {
+      "get": {
+        "tags": [
+          "Likes"
+        ],
+        "summary": "Get all like on the post",
+        "description": "Getting all likes on the post using postId as a parameter.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the post you want to get likes of."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/likes/toggle/{postId}": {
+      "get": {
+        "tags": [
+          "Likes"
+        ],
+        "summary": "Toggle like on a post",
+        "description": "Toggle like on the post to liked or not-liked using postId as a parameter.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the post you want to toggle like of."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/friends/get-friends/{userId}": {
+      "get": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Get Friends by userId",
+        "description": "Find friend by userId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "ObjectId"
+            },
+            "required": true,
+            "description": "ObjectId of user you want to find"
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/friends/get-prending-requests": {
+      "get": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Get pending requests",
+        "description": "find all the pending friend requests by by user",
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/friends/toggle-friendship/{friendId}": {
+      "put": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Get pending requests",
+        "description": "find all the pending friend requests by by user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "friendId",
+            "schema": {
+              "type": "ObjectId"
+            },
+            "required": true,
+            "description": "Numeric ID of the friend you want to toggle friendship with."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/friends/respond-to-request/{friendId}": {
+      "put": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Get pending requests",
+        "description": "find all the pending friend requests by by user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "friendId",
+            "schema": {
+              "type": "ObjectId"
+            },
+            "required": true,
+            "description": "Numeric ID of the friend you want to toggle friendship with."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/otp/send": {
+      "post": {
+        "tags": [
+          "OTP"
+        ],
+        "summary": "Get pending requests",
+        "description": "find all the pending friend requests by by user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "friendId",
+            "schema": {
+              "type": "ObjectId"
+            },
+            "required": true,
+            "description": "Numeric ID of the friend you want to toggle friendship with."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    },
+    "/api/otp/verify": {
+      "post": {
+        "tags": [
+          "OTP"
+        ],
+        "summary": "Verify OTP",
+        "description": "Verify OTP",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "email",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Numeric ID of the friend you want to toggle friendship with."
+          }
+        ],
+        "security": [
+          {
+            "JWT": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found... No post available with specified postId in the parameter...!"
+          }
+        }
+      }
+    }
+  }
+}
